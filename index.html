@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- --- Configurações PWA e iOS --- -->
+    <title>VinoSense</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VinoSense">
+    <!-- Tema do navegador agora é escuro -->
+    <meta name="theme-color" content="#121212">
+
+    <!-- LINKS DOS ÍCONES -->
+    <link id="app-favicon" rel="icon" type="image/png" href="https://raw.githubusercontent.com/lucasmaia2709-lang/rotulos/refs/heads/main/logo.jpg">
+    <link id="app-apple-icon" rel="apple-touch-icon" href="https://raw.githubusercontent.com/lucasmaia2709-lang/rotulos/refs/heads/main/logo.jpg">
+    
+    <!-- Manifesto (Se tiver criado) -->
+    <!-- <link rel="manifest" href="manifest.json"> -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Ícones Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* --- PALETA DE CORES DARK ELEGANCE --- */
+        :root {
+            --color-vino: #80182a;   /* Vermelho do Logo */
+            --color-sense: #4f6185;  /* Azul do Logo */
+            --color-gold: #d1a84f;   /* Dourado do Logo */
+            
+            /* Novas Cores Escuras */
+            --color-bg-main: #121212;     /* Fundo Principal (Carvão Profundo) */
+            --color-bg-card: #1e1e1e;     /* Cartões (Cinza Escuro Quente) */
+            --color-border: rgba(255,255,255,0.08); /* Bordas subtis */
+            --color-text-main: #f3f4f6;   /* Texto Claro */
+            --color-text-muted: #9ca3af;  /* Texto Secundário */
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            background-color: var(--color-bg-main);
+            color: var(--color-text-main);
+        }
+        h1, h2, h3, h4, .serif-font { font-family: 'Playfair Display', serif; }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .pt-safe-top { padding-top: calc(env(safe-area-inset-top) + 40px); }
+        .pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        .text-vino { color: var(--color-vino); }
+        .text-sense { color: var(--color-sense); }
+        .text-gold { color: var(--color-gold); }
+        .bg-vino { background-color: var(--color-vino); }
+        
+        .bg-vinosense-gradient { 
+            background: linear-gradient(135deg, var(--color-vino) 0%, var(--color-sense) 100%); 
+        }
+
+        /* --- NOVOS PAINÉIS DE VIDRO ESCO --- */
+        
+        /* Vidro Escuro (Substituto do Glass Panel Claro) */
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.70);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Vidro de Destaque (Já existia, refinado) */
+        .glass-dark {
+            background: rgba(20, 20, 20, 0.90);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Inputs Escuros */
+        .input-wine {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background-color: #1a1a1a;
+            color: white;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-wine::placeholder { color: #666; }
+        .input-wine:focus {
+            border-color: var(--color-vino);
+            background-color: #222;
+            box-shadow: 0 0 0 1px var(--color-vino);
+        }
+
+        /* Botões de Mercado */
+        .market-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.75rem; 
+            font-weight: 600;
+            transition: transform 0.1s;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            opacity: 0.9;
+        }
+        .market-btn:active { transform: scale(0.95); }
+        .market-lidl { background-color: #0050aa; } 
+        .market-cont { background-color: #e30613; } 
+        .market-auchan { background-color: #e2001a; } 
+        .market-gn { background-color: #222; border: 1px solid #444; } 
+
+        /* Animações */
+        .fade-enter { opacity: 0; transform: scale(0.98); }
+        .fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+        .btn-press:active { transform: scale(0.97); transition: transform 0.1s; }
+        
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 7s infinite; opacity: 0.2; } /* Opacidade aumentada para aparecer no escuro */
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+    </style>
+</head>
+<body class="antialiased overflow-hidden">
+    
+    <!-- Fundo Decorativo -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#80182a] rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
+        <div class="absolute top-[10%] -right-[10%] w-[60%] h-[60%] bg-[#4f6185] rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] bg-[#d1a84f] rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- TELA 1: AUTH -->
+    <div id="view-auth" class="fixed inset-0 z-50 flex flex-col justify-center px-6 pt-safe-top pb-safe-bottom bg-black/60 backdrop-blur-md transition-all duration-500 overflow-y-auto">
+        <div class="w-full max-w-sm mx-auto my-auto">
+            <div class="text-center mb-8">
+                <!-- LOGO -->
+                <div class="flex justify-center mb-4">
+                    <img id="auth-logo-img" src="" alt="Logo" class="h-28 w-28 rounded-full shadow-2xl border-2 border-white/10 bg-[#1e1e1e] object-contain p-2">
+                </div>
+                
+                <h1 class="text-4xl font-bold tracking-tight mb-1">
+                    <span class="text-vino">Vino</span><span class="text-sense">Sense</span>
+                </h1>
+                <p class="text-gray-400 font-serif italic text-sm">Inteligência para o seu paladar.</p>
+            </div>
+
+            <div class="glass-panel p-8 rounded-3xl shadow-2xl transition-all duration-300">
+                <div id="auth-message" class="hidden mb-4 p-3 rounded-lg text-sm text-center font-medium"></div>
+
+                <!-- FORM: LOGIN -->
+                <form id="form-login" class="space-y-4">
+                    <h2 class="text-xl font-bold text-white text-center mb-6">Entrar</h2>
+                    <div>
+                        <input type="email" id="login-email" class="input-wine" placeholder="Email" required>
+                    </div>
+                    <div>
+                        <input type="password" id="login-pass" class="input-wine" placeholder="Senha" required>
+                        <div class="text-right mt-1">
+                            <button type="button" id="btn-forgot" class="text-xs text-sense hover:text-vino font-medium">Esqueceu a senha?</button>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-submit-login" class="btn-press w-full bg-vinosense-gradient text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">Entrar</button>
+                    <div class="text-center pt-2">
+                        <span class="text-xs text-gray-400">Não tem conta?</span>
+                        <button type="button" id="btn-to-register" class="text-xs font-bold text-vino hover:underline ml-1">Cadastre-se</button>
+                    </div>
+                </form>
+
+                <!-- FORM: REGISTRO -->
+                <form id="form-register" class="hidden space-y-4">
+                    <h2 class="text-xl font-bold text-white text-center mb-6">Criar Conta</h2>
+                    <div>
+                        <input type="email" id="reg-email" class="input-wine" placeholder="Seu Email" required>
+                    </div>
+                    <div>
+                        <input type="password" id="reg-pass" class="input-wine" placeholder="Senha (mín. 6 caracteres)" required minlength="6">
+                    </div>
+                    <button type="submit" id="btn-submit-register" class="btn-press w-full bg-[#333] hover:bg-[#444] text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">Cadastrar</button>
+                    <div class="text-center pt-2">
+                        <span class="text-xs text-gray-400">Já possui conta?</span>
+                        <button type="button" id="btn-to-login" class="text-xs font-bold text-vino hover:underline ml-1">Faça Login</button>
+                    </div>
+                </form>
+
+                <!-- FORM: RESET -->
+                <form id="form-reset" class="hidden space-y-4">
+                    <h2 class="text-xl font-bold text-white text-center mb-2">Recuperar Senha</h2>
+                    <p class="text-xs text-gray-400 text-center mb-4">Digite seu email para receber o link.</p>
+                    <div>
+                        <input type="email" id="reset-email" class="input-wine" placeholder="Seu Email" required>
+                    </div>
+                    <button type="submit" id="btn-submit-reset" class="btn-press w-full bg-vinosense-gradient text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">Enviar Email</button>
+                    <div class="text-center pt-2">
+                        <button type="button" id="btn-reset-back" class="text-xs font-medium text-gray-400 hover:text-white">Voltar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 2: HOME -->
+    <div id="view-home" class="hidden fixed inset-0 z-40 flex flex-col px-6 pt-safe-top pb-safe-bottom overflow-y-auto">
+        <div class="flex justify-between items-center mt-4 mb-8">
+            <div>
+                <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Bem-vindo ao</p>
+                <h1 class="text-3xl font-bold tracking-tight text-white"><span class="text-vino">Vino</span><span class="text-sense">Sense</span></h1>
+            </div>
+            <button id="btn-logout" class="p-2 rounded-full bg-white/5 shadow-sm border border-white/10 text-gray-400 hover:text-red-400 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="glass-dark p-6 rounded-3xl mb-8 relative overflow-hidden shadow-lg border-l-4" style="border-left-color: var(--color-gold);">
+            <div class="absolute -right-4 -top-4 text-9xl opacity-10 font-serif text-white">"</div>
+            <p id="daily-quote" class="text-gray-200 italic font-serif relative z-10 text-lg leading-relaxed">"O vinho melhora com o tempo. Eu melhoro com o vinho."</p>
+            <div class="flex items-center gap-2 mt-4 opacity-70">
+                <div class="h-[1px] bg-white w-8"></div>
+                <p class="text-xs font-bold uppercase tracking-widest text-gold">VinoSense AI</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5">
+            <button id="btn-go-scan" class="btn-press group relative h-48 w-full rounded-3xl overflow-hidden shadow-xl transition-all border border-white/5">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/50 to-transparent opacity-90"></div>
+                <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                    <div class="flex items-center justify-between">
+                        <div class="text-left">
+                            <h3 class="text-2xl font-bold font-serif mb-1">Ler Rótulo</h3>
+                            <p class="text-gray-300 text-sm">IA Cognitiva</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20"><i data-lucide="camera" class="w-6 h-6 text-gold"></i></div>
+                    </div>
+                </div>
+            </button>
+
+            <button id="btn-go-catalog" class="btn-press group relative h-32 w-full rounded-3xl overflow-hidden shadow-xl transition-all border border-white/5">
+                <!-- LINK ATUALIZADO (Limpo) -->
+                <div class="absolute inset-0 bg-[url('https://raw.githubusercontent.com/lucasmaia2709-lang/rotulos/refs/heads/main/Fundo.jpg')] bg-cover bg-center"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#121212]/95 to-[#121212]/40"></div>
+                <div class="absolute inset-0 p-6 flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20"><i data-lucide="library" class="w-7 h-7 text-sense"></i></div>
+                        <div class="text-left">
+                            <h3 class="text-xl font-bold text-white">Sua Adega</h3>
+                            <p class="text-gray-300 text-sm">Coleção Pessoal</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-gold"></i>
+                </div>
+            </button>
+        </div>
+        <p class="text-center text-xs text-gray-500 mt-auto mb-4 opacity-50">Powered by VinoSense AI</p>
+    </div>
+
+    <!-- TELA 3: SCANNER -->
+    <div id="view-scan" class="hidden fixed inset-0 z-50 flex flex-col bg-[#121212] overflow-y-auto">
+        <div class="pt-safe-top px-4 pb-4 flex items-center sticky top-0 bg-[#121212]/90 backdrop-blur-md z-30 border-b border-white/5">
+            <button id="btn-back-home" class="p-2 -ml-2 rounded-full hover:bg-white/5 transition-colors text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+            <h2 class="text-lg font-bold text-white ml-2">Analisar Vinho</h2>
+        </div>
+
+        <div class="p-6 pb-20 max-w-2xl mx-auto w-full">
+            <div class="mb-6">
+                <label for="file-upload" class="group relative flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-700 bg-[#1e1e1e] rounded-3xl cursor-pointer hover:border-vino transition-all overflow-hidden">
+                    <img id="image-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10" />
+                    <div id="upload-prompt" class="flex flex-col items-center justify-center pt-5 pb-6 z-0 transition-transform group-hover:scale-105">
+                        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-4"><i data-lucide="scan-line" class="w-8 h-8 text-vino"></i></div>
+                        <p class="mb-1 text-lg font-bold text-white">Tirar Foto do Rótulo</p>
+                        <p class="text-xs text-sense font-medium">ou escolher da galeria</p>
+                    </div>
+                    <input id="file-upload" type="file" class="hidden" accept="image/*" />
+                    <button id="btn-reset-img" class="hidden absolute top-4 right-4 z-20 bg-black/50 text-white p-2 rounded-full backdrop-blur-md"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </label>
+            </div>
+
+            <button id="submit-button" disabled class="btn-press w-full bg-vinosense-gradient text-white font-bold py-4 px-6 rounded-2xl shadow-xl transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center text-lg gap-3 border border-white/20">
+                <div id="loading-spinner" class="animate-spin hidden"><i data-lucide="loader-2" class="w-6 h-6"></i></div>
+                <span id="submit-button-text">Identificar com VinoSense</span>
+            </button>
+
+            <div id="results-section" class="hidden mt-8 space-y-6 animate-pulse-once">
+                <div id="save-success-msg" class="hidden glass-panel border border-green-500/30 bg-green-500/10 p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400"><i data-lucide="check" class="w-4 h-4"></i></div>
+                    <span class="text-sm font-medium text-green-400">Vinho salvo na adega!</span>
+                </div>
+                
+                <div id="save-error-msg" class="hidden glass-panel border border-red-500/30 bg-red-500/10 p-4 rounded-xl flex items-start gap-3">
+                    <div class="w-8 h-8 bg-red-500/20 rounded-full flex shrink-0 items-center justify-center text-red-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
+                    <div>
+                        <span class="text-sm font-bold text-red-400 block">Erro de Permissão</span>
+                        <span class="text-xs text-red-300 mt-1 block">Não foi possível salvar. Verifique se está logado.</span>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e1e1e] p-6 rounded-3xl shadow-lg border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-[#80182a]/20 rounded-bl-[100px] -mr-4 -mt-4 z-0"></div>
+                    <div class="relative z-10">
+                        <span id="res-type" class="text-xs font-bold tracking-widest uppercase text-vino bg-[#80182a]/20 px-3 py-1 rounded-full mb-3 inline-block">Vinho Tinto</span>
+                        <h2 id="res-name" class="text-3xl font-bold text-white mb-2 font-serif leading-tight"></h2>
+                        <p id="res-region" class="text-sense flex items-center gap-1 text-sm"><i data-lucide="map-pin" class="w-3 h-3"></i> <span class="val"></span></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-[#1e1e1e] p-5 rounded-2xl shadow-sm border border-white/5">
+                        <div class="text-vino mb-2"><i data-lucide="thermometer" class="w-5 h-5"></i></div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase">Servir/Guardar</h4>
+                        <p id="res-storage" class="text-sm font-medium text-white mt-1"></p>
+                    </div>
+                    <div class="bg-[#1e1e1e] p-5 rounded-2xl shadow-sm border border-white/5">
+                        <div class="text-sense mb-2"><i data-lucide="grape" class="w-5 h-5"></i></div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase">Uvas</h4>
+                        <p id="res-grapes" class="text-sm font-medium text-white mt-1"></p>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e1e1e] p-6 rounded-3xl shadow-sm border border-white/5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-900/40 flex items-center justify-center text-orange-400"><i data-lucide="utensils" class="w-5 h-5"></i></div>
+                        <h3 class="text-lg font-bold text-white">Harmonização</h3>
+                    </div>
+                    <p id="res-pairing" class="text-gray-300 leading-relaxed"></p>
+                </div>
+
+                <div class="glass-dark p-6 rounded-3xl shadow-lg text-white border-l-4" style="border-left-color: var(--color-gold);">
+                    <h3 class="text-lg font-bold font-serif mb-3 border-b border-white/20 pb-2 text-gold">Notas do Sommelier</h3>
+                    <p id="res-notes" class="text-gray-200 italic leading-relaxed text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 4: CATÁLOGO -->
+    <div id="view-catalog" class="hidden fixed inset-0 z-50 flex flex-col bg-[#121212]">
+        <div class="pt-safe-top px-4 pb-4 flex flex-col sticky top-0 bg-[#121212]/90 backdrop-blur-md z-30 border-b border-white/5">
+            <div class="flex items-center mb-2">
+                <button id="btn-close-catalog" class="p-2 -ml-2 rounded-full hover:bg-white/5 transition-colors text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                <h2 class="text-lg font-bold text-white ml-2">Minha Adega</h2>
+            </div>
+            <div class="mb-2 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-sense"></i>
+                <input id="catalog-search" type="text" class="input-wine text-sm pl-9 py-2.5" placeholder="Buscar por nome, uva, tipo...">
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 pb-20">
+            <div id="catalog-error-permission" class="hidden mx-4 mt-6 p-4 bg-red-900/20 border border-red-500/30 rounded-xl">
+                <div class="flex items-center gap-2 mb-2 text-red-400 font-bold"><i data-lucide="lock" class="w-5 h-5"></i><h3>Acesso Negado</h3></div>
+                <p class="text-sm text-red-300">Verifique se está conectado.</p>
+            </div>
+
+            <div id="catalog-loader" class="flex justify-center mt-20"><i data-lucide="loader" class="animate-spin w-8 h-8 text-vino"></i></div>
+            <div id="empty-catalog-msg" class="hidden flex flex-col items-center justify-center mt-20 text-gray-500 text-center">
+                <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-4 opacity-50"><i data-lucide="wine" class="w-10 h-10"></i></div>
+                <p class="font-medium">Sua adega está vazia.</p>
+                <p class="text-sm mt-1">Escaneie um rótulo para começar.</p>
+            </div>
+            <div id="empty-search-msg" class="hidden flex flex-col items-center justify-center mt-20 text-gray-500 text-center">
+                 <p class="font-medium">Nenhum vinho encontrado.</p>
+            </div>
+            <div id="catalog-list" class="grid grid-cols-2 gap-4 p-4"></div>
+        </div>
+    </div>
+
+    <!-- TELA 5: DETALHES -->
+    <div id="view-detail" class="hidden fixed inset-0 z-[2000] flex flex-col bg-[#121212] transform translate-y-full transition-transform duration-300 shadow-2xl">
+        <div class="relative h-[45vh] shrink-0 bg-[#000]">
+            <img id="detail-image" src="" class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/50 to-transparent"></div>
+            <div class="absolute top-0 left-0 w-full pt-safe-top px-4 flex justify-between items-start pointer-events-none z-20">
+                <button id="btn-close-detail" class="p-2 bg-black/40 backdrop-blur-md rounded-full text-white pointer-events-auto border border-white/20"><i data-lucide="chevron-down" class="w-6 h-6"></i></button>
+                <button id="btn-delete-item" class="p-2 bg-red-900/60 backdrop-blur-md rounded-full text-white pointer-events-auto shadow-lg border border-red-500/50"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+                <span id="detail-type" class="text-[10px] font-bold tracking-widest uppercase bg-white/10 backdrop-blur-sm text-white px-2 py-1 rounded-md mb-2 inline-block"></span>
+                <h2 id="detail-title" class="text-3xl font-bold text-white font-serif leading-tight shadow-sm"></h2>
+                <p id="detail-region" class="text-gray-300 text-sm mt-1 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-gold"></i> <span></span></p>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto bg-[#1a1a1a] -mt-6 rounded-t-3xl relative z-10 px-6 pt-8 pb-10 border-t border-white/5">
+            <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-[#242424] p-4 rounded-xl border border-white/5">
+                        <p class="text-xs text-sense uppercase font-bold">Uvas</p>
+                        <p id="detail-grapes" class="text-sm font-medium text-gray-200"></p>
+                    </div>
+                    <div class="bg-[#242424] p-4 rounded-xl border border-white/5">
+                        <p class="text-xs text-sense uppercase font-bold">Armazenamento</p>
+                        <p id="detail-storage" class="text-sm font-medium text-gray-200"></p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-vino"></i> Harmonização</h3>
+                    <p id="detail-pairing" class="text-gray-400 leading-relaxed text-sm"></p>
+                </div>
+                <div class="bg-[#121212] text-white p-5 rounded-2xl shadow-inner border-l-4" style="border-left-color: var(--color-vino);">
+                    <h3 class="font-serif text-lg mb-2 border-b border-white/10 pb-2 text-gold">Notas</h3>
+                    <p id="detail-notes" class="italic text-gray-300 text-sm"></p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white flex items-center gap-2 mb-3"><i data-lucide="shopping-bag" class="w-4 h-4 text-sense"></i> 💰 Comparar Preços (Portugal)</h3>
+                    <div id="detail-markets" class="grid grid-cols-2 gap-3"></div>
+                </div>
+                <p id="detail-date" class="text-center text-xs text-gray-500 mt-4"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        // --- NOVO: Importando funções do Storage ---
+        import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+        // ========================================================
+        // 🛠️ CONFIGURAÇÃO DE IMAGENS (ALTERE AQUI!)
+        // ========================================================
+        const APP_IMAGES = {
+            logo: "https://raw.githubusercontent.com/lucasmaia2709-lang/rotulos/refs/heads/main/logo.jpg", 
+            icon: "https://raw.githubusercontent.com/lucasmaia2709-lang/rotulos/refs/heads/main/logo.jpg"  
+        };
+        // ========================================================
+
+        document.getElementById('app-favicon').href = APP_IMAGES.icon;
+        document.getElementById('app-apple-icon').href = APP_IMAGES.icon;
+        document.getElementById('auth-logo-img').src = APP_IMAGES.logo;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPwBp5cNCr80IpY1EMLvtVnWFHssvxlMY",
+            authDomain: "rotulos-9e0cb.firebaseapp.com",
+            projectId: "rotulos-9e0cb",
+            storageBucket: "rotulos-9e0cb.firebasestorage.app",
+            messagingSenderId: "607613417398",
+            appId: "1:607613417398:web:f7ef415f033ba67fd93317",
+            measurementId: "G-KWWHDJCLQZ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        // --- NOVO: Inicializando o Storage ---
+        const storage = getStorage(app);
+
+        const WORKER_URL = "https://rotulos.lucasmaia2709.workers.dev";
+        const API_KEY = ""; 
+        const FALLBACK_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+
+        const ui = {
+            views: {
+                auth: document.getElementById('view-auth'),
+                home: document.getElementById('view-home'),
+                scan: document.getElementById('view-scan'),
+                catalog: document.getElementById('view-catalog'),
+                detail: document.getElementById('view-detail')
+            },
+            auth: {
+                message: document.getElementById('auth-message'),
+                formLogin: document.getElementById('form-login'),
+                formRegister: document.getElementById('form-register'),
+                formReset: document.getElementById('form-reset'),
+                loginEmail: document.getElementById('login-email'),
+                loginPass: document.getElementById('login-pass'),
+                btnLogin: document.getElementById('btn-submit-login'),
+                regEmail: document.getElementById('reg-email'),
+                regPass: document.getElementById('reg-pass'),
+                btnRegister: document.getElementById('btn-submit-register'),
+                resetEmail: document.getElementById('reset-email'),
+                btnReset: document.getElementById('btn-submit-reset'),
+                linkToRegister: document.getElementById('btn-to-register'),
+                linkToLogin: document.getElementById('btn-to-login'),
+                linkForgot: document.getElementById('btn-forgot'),
+                btnResetBack: document.getElementById('btn-reset-back')
+            },
+            home: {
+                btnLogout: document.getElementById('btn-logout'),
+                btnScan: document.getElementById('btn-go-scan'),
+                btnCatalog: document.getElementById('btn-go-catalog'),
+                quote: document.getElementById('daily-quote')
+            },
+            scan: {
+                btnBack: document.getElementById('btn-back-home'),
+                input: document.getElementById('file-upload'),
+                preview: document.getElementById('image-preview'),
+                prompt: document.getElementById('upload-prompt'),
+                btnReset: document.getElementById('btn-reset-img'),
+                btnSubmit: document.getElementById('submit-button'),
+                spinner: document.getElementById('loading-spinner'),
+                btnText: document.getElementById('submit-button-text'),
+                resSection: document.getElementById('results-section'),
+                fields: {
+                    name: document.getElementById('res-name'),
+                    type: document.getElementById('res-type'),
+                    region: document.getElementById('res-region').querySelector('.val'),
+                    storage: document.getElementById('res-storage'),
+                    grapes: document.getElementById('res-grapes'),
+                    pairing: document.getElementById('res-pairing'),
+                    notes: document.getElementById('res-notes')
+                },
+                successMsg: document.getElementById('save-success-msg'),
+                errorMsg: document.getElementById('save-error-msg')
+            },
+            catalog: {
+                btnClose: document.getElementById('btn-close-catalog'),
+                grid: document.getElementById('catalog-list'),
+                loader: document.getElementById('catalog-loader'),
+                empty: document.getElementById('empty-catalog-msg'),
+                emptySearch: document.getElementById('empty-search-msg'),
+                permError: document.getElementById('catalog-error-permission'),
+                search: document.getElementById('catalog-search')
+            },
+            detail: {
+                el: document.getElementById('view-detail'),
+                btnClose: document.getElementById('btn-close-detail'),
+                btnDelete: document.getElementById('btn-delete-item'),
+                img: document.getElementById('detail-image'),
+                title: document.getElementById('detail-title'),
+                type: document.getElementById('detail-type'),
+                region: document.getElementById('detail-region').querySelector('span'),
+                grapes: document.getElementById('detail-grapes'),
+                storage: document.getElementById('detail-storage'),
+                pairing: document.getElementById('detail-pairing'),
+                notes: document.getElementById('detail-notes'),
+                markets: document.getElementById('detail-markets'),
+                date: document.getElementById('detail-date')
+            }
+        };
+
+        let currentUser = null;
+        let base64Image = null;
+        let currentDetailId = null;
+        let catalogUnsubscribe = null;
+        let justRegistered = false; 
+        
+        let allWinesData = [];
+
+        lucide.createIcons();
+
+        function switchView(viewName) {
+            Object.keys(ui.views).forEach(k => {
+                if (k !== 'detail') ui.views[k].classList.add('hidden');
+            });
+            const target = ui.views[viewName];
+            target.classList.remove('hidden');
+            target.classList.add('fade-enter-active');
+            
+            if (viewName === 'catalog') {
+                loadCatalog();
+                ui.catalog.search.value = ""; 
+            }
+        }
+
+        function showAuthMessage(msg, type = 'error') {
+            ui.auth.message.textContent = msg;
+            ui.auth.message.className = `mb-4 p-3 rounded-lg text-sm text-center font-medium ${type === 'error' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'}`;
+            ui.auth.message.classList.remove('hidden');
+        }
+
+        ui.auth.linkToRegister.onclick = () => { ui.auth.message.classList.add('hidden'); ui.auth.formLogin.classList.add('hidden'); ui.auth.formRegister.classList.remove('hidden'); };
+        ui.auth.linkToLogin.onclick = () => { ui.auth.message.classList.add('hidden'); ui.auth.formRegister.classList.add('hidden'); ui.auth.formLogin.classList.remove('hidden'); };
+        ui.auth.linkForgot.onclick = () => { ui.auth.message.classList.add('hidden'); ui.auth.formLogin.classList.add('hidden'); ui.auth.formReset.classList.remove('hidden'); };
+        ui.auth.btnResetBack.onclick = () => { ui.auth.message.classList.add('hidden'); ui.auth.formReset.classList.add('hidden'); ui.auth.formLogin.classList.remove('hidden'); };
+
+        ui.auth.formLogin.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = ui.auth.loginEmail.value;
+            const pass = ui.auth.loginPass.value;
+            ui.auth.btnLogin.textContent = "Verificando...";
+            ui.auth.message.classList.add('hidden');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                let msg = "Erro ao entrar.";
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "Email ou senha incorretos.";
+                } else if(error.code === 'auth/operation-not-allowed') {
+                    msg = "Login por email não está habilitado.";
+                     await signInAnonymously(auth);
+                     return;
+                }
+                showAuthMessage(msg, 'error');
+                ui.auth.btnLogin.textContent = "Entrar";
+            }
+        };
+
+        ui.auth.formRegister.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = ui.auth.regEmail.value;
+            const pass = ui.auth.regPass.value;
+            ui.auth.btnRegister.textContent = "Criando...";
+            ui.auth.message.classList.add('hidden');
+            justRegistered = true; 
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+                await signOut(auth); 
+                ui.auth.formRegister.classList.add('hidden');
+                ui.auth.formLogin.classList.remove('hidden');
+                showAuthMessage("Conta criada! Faça login para entrar.", "success");
+            } catch (error) {
+                let msg = "Erro ao criar conta.";
+                if(error.code === 'auth/email-already-in-use') msg = "Este email já está em uso.";
+                if(error.code === 'auth/weak-password') msg = "Senha muito fraca.";
+                 if(error.code === 'auth/operation-not-allowed') {
+                    msg = "Registro por email não habilitado.";
+                }
+                showAuthMessage(msg, 'error');
+            } finally {
+                ui.auth.btnRegister.textContent = "Cadastrar";
+                justRegistered = false;
+            }
+        };
+
+        ui.auth.formReset.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = ui.auth.resetEmail.value;
+            ui.auth.btnReset.textContent = "Enviando...";
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showAuthMessage("Email de recuperação enviado!", "success");
+            } catch (error) {
+                showAuthMessage("Erro ao enviar email.", "error");
+            } finally {
+                ui.auth.btnReset.textContent = "Enviar Email";
+            }
+        };
+
+        ui.home.btnLogout.onclick = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (justRegistered && user) return;
+            if (user) {
+                switchView('home');
+                generateWineQuote();
+            } else {
+                switchView('auth');
+                ui.auth.loginEmail.value = "";
+                ui.auth.loginPass.value = "";
+                ui.auth.regEmail.value = "";
+                ui.auth.regPass.value = "";
+                ui.auth.formLogin.classList.remove('hidden');
+                ui.auth.formRegister.classList.add('hidden');
+                ui.auth.formReset.classList.add('hidden');
+                ui.auth.message.classList.add('hidden');
+                ui.auth.btnLogin.textContent = "Entrar";
+            }
+        });
+
+        ui.home.btnScan.onclick = () => switchView('scan');
+        ui.scan.btnBack.onclick = () => switchView('home');
+
+        ui.scan.input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                ui.scan.preview.src = ev.target.result;
+                ui.scan.preview.classList.remove('hidden');
+                ui.scan.prompt.classList.add('hidden');
+                ui.scan.btnReset.classList.remove('hidden');
+                base64Image = ev.target.result.split(',')[1];
+                ui.scan.btnSubmit.disabled = false;
+                ui.scan.resSection.classList.add('hidden');
+                ui.scan.successMsg.classList.add('hidden');
+                ui.scan.errorMsg.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        ui.scan.btnReset.onclick = (e) => {
+            e.preventDefault();
+            ui.scan.preview.classList.add('hidden');
+            ui.scan.prompt.classList.remove('hidden');
+            ui.scan.btnReset.classList.add('hidden');
+            ui.scan.input.value = '';
+            base64Image = null;
+            ui.scan.btnSubmit.disabled = true;
+            ui.scan.resSection.classList.add('hidden');
+        };
+
+        function extractJSON(text) {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1) {
+                return text.substring(start, end + 1);
+            }
+            return text;
+        }
+
+        ui.scan.btnSubmit.onclick = async () => {
+            if (!base64Image) return;
+            
+            ui.scan.btnSubmit.disabled = true;
+            ui.scan.spinner.classList.remove('hidden');
+            ui.scan.btnText.textContent = "Analisando...";
+            ui.scan.successMsg.classList.add('hidden');
+            ui.scan.errorMsg.classList.add('hidden');
+            
+            const promptText = `
+                Você é um sommelier. Analise o rótulo. Retorne APENAS um objeto JSON válido (sem markdown, sem texto antes ou depois) com o seguinte formato:
+                { "nome": "...", "tipo": "...", "regiao": "...", "uvas": "...", "armazenamento": "...", "harmonizacao": "...", "notas": "..." }
+            `;
+
+            let data = null;
+
+            try {
+                console.log("Tentando Worker:", WORKER_URL);
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: base64Image,
+                        mimeType: "image/jpeg",
+                        prompt: promptText
+                    })
+                });
+
+                if (!response.ok) throw new Error("Worker falhou");
+                const result = await response.json();
+                
+                data = result;
+                if (result.text) {
+                        const jsonStr = extractJSON(result.text);
+                        data = JSON.parse(jsonStr);
+                }
+
+            } catch (workerError) {
+                console.warn("Worker falhou, tentando Fallback API direta...", workerError);
+                
+                try {
+                    const fallbackPayload = {
+                        contents: [{
+                            parts: [
+                                { text: promptText },
+                                { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+                            ]
+                        }]
+                    };
+
+                    const fbResponse = await fetch(FALLBACK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(fallbackPayload)
+                    });
+
+                    if (!fbResponse.ok) throw new Error("Fallback falhou também");
+                    
+                    const fbResult = await fbResponse.json();
+                    const text = fbResult.candidates[0].content.parts[0].text;
+                    const jsonStr = extractJSON(text);
+                    data = JSON.parse(jsonStr);
+
+                } catch (fbError) {
+                    console.error("Erro fatal:", fbError);
+                    alert("Erro ao identificar vinho. Verifique sua conexão.");
+                    ui.scan.btnSubmit.disabled = false;
+                    ui.scan.spinner.classList.add('hidden');
+                    ui.scan.btnText.textContent = "Identificar com VinoSense";
+                    return;
+                }
+            }
+
+            if (data) {
+                ui.scan.fields.name.textContent = data.nome;
+                ui.scan.fields.type.textContent = data.tipo;
+                ui.scan.fields.region.textContent = data.regiao;
+                ui.scan.fields.grapes.textContent = data.uvas;
+                ui.scan.fields.storage.textContent = data.armazenamento;
+                ui.scan.fields.pairing.textContent = data.harmonizacao;
+                ui.scan.fields.notes.textContent = data.notas;
+
+                ui.scan.resSection.classList.remove('hidden');
+                ui.scan.resSection.scrollIntoView({ behavior: 'smooth' });
+
+                if (currentUser) {
+                    try {
+                        const thumb = await compressImage(base64Image); // Isso retorna a string base64 "data:image/..."
+                        
+                        // --- NOVO: Lógica de Upload para o Storage (Atualizado para Email/Nome) ---
+                        const filename = Date.now() + '.jpg';
+                        
+                        // Ajuste solicitado: Users/ Email / Nome do vinho / Imagem
+                        // Sanitização básica para evitar erros no caminho (remove barras e caracteres estranhos)
+                        const userFolder = currentUser.email || currentUser.uid; 
+                        const wineFolder = (data.nome || 'SemNome').replace(/[\/\\#\?]/g, "_"); 
+
+                        // Cria referência: Users/email/nome_vinho/timestamp.jpg
+                        const storagePath = `Users/${userFolder}/${wineFolder}/${filename}`;
+                        const storageRef = ref(storage, storagePath);
+                        
+                        // Faz o upload da string base64
+                        await uploadString(storageRef, thumb, 'data_url');
+                        
+                        // Obtém o link público para download
+                        const downloadURL = await getDownloadURL(storageRef);
+
+                        // Salva no Firestore
+                        const winesRef = collection(db, 'users', currentUser.uid, 'wines');
+                        await addDoc(winesRef, { 
+                            ...data, 
+                            timestamp: serverTimestamp(), 
+                            imageThumb: downloadURL, // Salva o Link
+                            storagePath: storageRef.fullPath // Salva o caminho para poder deletar depois
+                        });
+                        
+                        ui.scan.successMsg.classList.remove('hidden');
+                    } catch (fsError) {
+                        console.error("Erro Firestore/Storage:", fsError);
+                        ui.scan.errorMsg.classList.remove('hidden');
+                    }
+                }
+            }
+            
+            ui.scan.btnSubmit.disabled = false;
+            ui.scan.spinner.classList.add('hidden');
+            ui.scan.btnText.textContent = "Identificar com VinoSense";
+        };
+
+        async function compressImage(b64) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.src = "data:image/jpeg;base64," + b64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const scale = 300 / img.width;
+                    canvas.width = 300; canvas.height = img.height * scale;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+            });
+        }
+
+        ui.home.btnCatalog.onclick = () => switchView('catalog');
+        ui.catalog.btnClose.onclick = () => switchView('home');
+
+        ui.catalog.search.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allWinesData.filter(item => {
+                const searchStr = `${item.nome} ${item.tipo} ${item.uvas} ${item.regiao}`.toLowerCase();
+                return searchStr.includes(term);
+            });
+            renderCatalog(filtered);
+        });
+
+        function loadCatalog() {
+            if (!currentUser) return;
+            ui.catalog.loader.classList.remove('hidden');
+            ui.catalog.empty.classList.add('hidden');
+            ui.catalog.emptySearch.classList.add('hidden');
+            ui.catalog.permError.classList.add('hidden'); 
+            ui.catalog.grid.innerHTML = '';
+            
+            if (catalogUnsubscribe) catalogUnsubscribe();
+
+            const winesRef = collection(db, 'users', currentUser.uid, 'wines');
+            
+            catalogUnsubscribe = onSnapshot(winesRef, (snapshot) => {
+                ui.catalog.loader.classList.add('hidden');
+                
+                allWinesData = [];
+                snapshot.forEach(doc => allWinesData.push({ id: doc.id, ...doc.data() }));
+
+                allWinesData.sort((a, b) => {
+                    const dateA = a.timestamp ? (a.timestamp.toDate ? a.timestamp.toDate() : new Date(a.timestamp)) : new Date(0);
+                    const dateB = b.timestamp ? (b.timestamp.toDate ? b.timestamp.toDate() : new Date(b.timestamp)) : new Date(0);
+                    return dateB - dateA; 
+                });
+
+                renderCatalog(allWinesData);
+
+            }, (error) => {
+                console.error("Erro Snapshot:", error);
+                ui.catalog.loader.classList.add('hidden');
+                if (error.code === 'permission-denied' || error.message.includes('permission')) {
+                    ui.catalog.permError.classList.remove('hidden');
+                }
+            });
+        }
+
+        function renderCatalog(items) {
+            ui.catalog.grid.innerHTML = '';
+            ui.catalog.empty.classList.add('hidden');
+            ui.catalog.emptySearch.classList.add('hidden');
+
+            if (items.length === 0) {
+                if (allWinesData.length > 0) {
+                    ui.catalog.emptySearch.classList.remove('hidden');
+                } else {
+                    ui.catalog.empty.classList.remove('hidden');
+                }
+                return;
+            }
+
+            items.forEach(item => createCatalogItem(item));
+        }
+
+        function createCatalogItem(item) {
+            const div = document.createElement('div');
+            // Cartão do catálogo em modo escuro
+            div.className = "relative w-full pb-[130%] rounded-2xl overflow-hidden shadow-md bg-[#1e1e1e] cursor-pointer active:scale-95 transition-transform border border-white/5";
+            div.innerHTML = `
+                <img src="${item.imageThumb}" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#000] via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-3">
+                    <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-sm uppercase tracking-wider mb-1 inline-block backdrop-blur-sm">${item.tipo || 'Vinho'}</span>
+                    <h3 class="text-white text-sm font-bold truncate font-serif">${item.nome}</h3>
+                    <p class="text-gray-400 text-[10px] truncate">${item.regiao || ''}</p>
+                </div>`;
+            div.onclick = () => openDetail(item);
+            ui.catalog.grid.appendChild(div);
+        }
+
+        function openDetail(item) {
+            currentDetailId = item.id;
+            ui.detail.img.src = item.imageThumb;
+            ui.detail.title.textContent = item.nome;
+            ui.detail.type.textContent = item.tipo;
+            ui.detail.region.textContent = item.regiao;
+            ui.detail.grapes.textContent = item.uvas;
+            ui.detail.storage.textContent = item.armazenamento;
+            ui.detail.pairing.textContent = item.harmonizacao;
+            ui.detail.notes.textContent = item.notas || "";
+            if (item.timestamp) {
+                const date = item.timestamp.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
+                ui.detail.date.textContent = "Degustado em " + date.toLocaleDateString('pt-BR');
+            }
+
+            const term = encodeURIComponent(item.nome + " vinho");
+            ui.detail.markets.innerHTML = `
+                <a href="https://www.lidl.pt/q/search?q=${term}" target="_blank" class="market-btn market-lidl">
+                    Lidl
+                </a>
+                <a href="https://www.continente.pt/pesquisa/?q=${term}" target="_blank" class="market-btn market-cont">
+                    Continente
+                </a>
+                <a href="https://www.auchan.pt/pt/pesquisa?q=${term}" target="_blank" class="market-btn market-auchan">
+                    Auchan
+                </a>
+                <a href="https://www.garrafeiranacional.com/catalogsearch/result/?q=${term}" target="_blank" class="market-btn market-gn">
+                    Garrafeira Nacional
+                </a>
+            `;
+
+            ui.detail.el.classList.remove('hidden');
+            setTimeout(() => ui.detail.el.classList.remove('translate-y-full'), 10);
+        }
+
+        ui.detail.btnClose.onclick = () => { ui.detail.el.classList.add('translate-y-full'); setTimeout(() => ui.detail.el.classList.add('hidden'), 300); };
+        ui.detail.btnDelete.onclick = async () => {
+            if (!confirm("Remover?")) return;
+            try {
+                // --- NOVO: Deletar Imagem do Storage ---
+                const item = allWinesData.find(i => i.id === currentDetailId);
+                
+                // Tenta deletar se tiver o caminho salvo
+                if (item && item.storagePath) {
+                    try {
+                        const imgRef = ref(storage, item.storagePath);
+                        await deleteObject(imgRef);
+                    } catch (storageErr) {
+                        console.error("Aviso: Imagem não encontrada ou erro ao deletar do Storage", storageErr);
+                    }
+                }
+
+                // Deleta o documento do Firestore
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'wines', currentDetailId));
+                ui.detail.btnClose.click();
+            } catch(e) {
+                console.error(e);
+                alert("Erro ao remover: Verifique suas permissões.");
+            }
+        };
+
+        function generateWineQuote() {
+            const quotes = ["O vinho alegra o coração.", "Sem vinho não há amor.", "A vida é curta para beber vinho ruim."];
+            ui.home.quote.textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+        }
+    </script>
+</body>
+</html>
