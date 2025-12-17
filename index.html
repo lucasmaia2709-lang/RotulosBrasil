@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- --- Configurações PWA e iOS --- -->
-    <title>VinoSense</title>
+    <title>VinoSense Brasil</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="VinoSense">
+    <meta name="apple-mobile-web-app-title" content="VinoSense BR">
     <!-- Tema do navegador agora é escuro -->
     <meta name="theme-color" content="#121212">
 
@@ -102,7 +102,7 @@
             box-shadow: 0 0 0 1px var(--color-vino);
         }
 
-        /* Botões de Mercado */
+        /* Botões de Mercado (BRASIL) */
         .market-btn {
             display: flex;
             align-items: center;
@@ -119,10 +119,12 @@
             opacity: 0.9;
         }
         .market-btn:active { transform: scale(0.95); }
-        .market-lidl { background-color: #0050aa; } 
-        .market-cont { background-color: #e30613; } 
-        .market-auchan { background-color: #e2001a; } 
-        .market-gn { background-color: #222; border: 1px solid #444; } 
+        
+        /* Cores das marcas brasileiras */
+        .market-pa { background-color: #005735; } /* Pão de Açúcar (Verde) */
+        .market-stmarche { background-color: #224138; } /* St Marche (Verde Escuro) */
+        .market-mambo { background-color: #E30613; } /* Mambo (Vermelho) */
+        .market-wine { background-color: #C8102E; } /* Wine (Magenta/Vinho) */
 
         /* Animações */
         .fade-enter { opacity: 0; transform: scale(0.98); }
@@ -158,9 +160,16 @@
                     <img id="auth-logo-img" src="" alt="Logo" class="h-28 w-28 rounded-full shadow-2xl border-2 border-white/10 bg-[#1e1e1e] object-contain p-2">
                 </div>
                 
-                <h1 class="text-4xl font-bold tracking-tight mb-1">
-                    <span class="text-vino">Vino</span><span class="text-sense">Sense</span>
-                </h1>
+                <!-- TÍTULO COM BANDEIRA DO BRASIL -->
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <h1 class="text-4xl font-bold tracking-tight">
+                        <span class="text-vino">Vino</span><span class="text-sense">Sense</span>
+                    </h1>
+                    <span class="bg-green-900/30 border border-green-500/30 text-green-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">
+                        🇧🇷 BR
+                    </span>
+                </div>
+
                 <p class="text-gray-400 font-serif italic text-sm">Inteligência para o seu paladar.</p>
             </div>
 
@@ -223,7 +232,7 @@
         <div class="flex justify-between items-center mt-4 mb-8">
             <div>
                 <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">Bem-vindo ao</p>
-                <h1 class="text-3xl font-bold tracking-tight text-white"><span class="text-vino">Vino</span><span class="text-sense">Sense</span></h1>
+                <h1 class="text-3xl font-bold tracking-tight text-white"><span class="text-vino">Vino</span><span class="text-sense">Sense</span> <span class="text-sm align-middle">🇧🇷</span></h1>
             </div>
             <button id="btn-logout" class="p-2 rounded-full bg-white/5 shadow-sm border border-white/10 text-gray-400 hover:text-red-400 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
         </div>
@@ -365,7 +374,7 @@
         <div class="flex-1 overflow-y-auto p-4 pb-20">
             <div id="catalog-error-permission" class="hidden mx-4 mt-6 p-4 bg-red-900/20 border border-red-500/30 rounded-xl">
                 <div class="flex items-center gap-2 mb-2 text-red-400 font-bold"><i data-lucide="lock" class="w-5 h-5"></i><h3>Acesso Negado</h3></div>
-                <p class="text-sm text-red-300">Verifique se está conectado.</p>
+                <p id="catalog-error-text" class="text-sm text-red-300">Verifique se está conectado.</p>
             </div>
 
             <div id="catalog-loader" class="flex justify-center mt-20"><i data-lucide="loader" class="animate-spin w-8 h-8 text-vino"></i></div>
@@ -418,7 +427,7 @@
                     <p id="detail-notes" class="italic text-gray-300 text-sm"></p>
                 </div>
                 <div>
-                    <h3 class="font-bold text-white flex items-center gap-2 mb-3"><i data-lucide="shopping-bag" class="w-4 h-4 text-sense"></i> 💰 Comparar Preços (Portugal)</h3>
+                    <h3 class="font-bold text-white flex items-center gap-2 mb-3"><i data-lucide="shopping-bag" class="w-4 h-4 text-sense"></i> 💰 Comparar Preços (Brasil)</h3>
                     <div id="detail-markets" class="grid grid-cols-2 gap-3"></div>
                 </div>
                 <p id="detail-date" class="text-center text-xs text-gray-500 mt-4"></p>
@@ -431,7 +440,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-        // --- NOVO: Importando funções do Storage ---
         import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
         // ========================================================
@@ -447,20 +455,20 @@
         document.getElementById('app-apple-icon').href = APP_IMAGES.icon;
         document.getElementById('auth-logo-img').src = APP_IMAGES.logo;
 
+        // 🔥 CONFIGURAÇÃO FIREBASE DO PROJETO "ROTULOS BRASIL" 🔥
         const firebaseConfig = {
-            apiKey: "AIzaSyDPwBp5cNCr80IpY1EMLvtVnWFHssvxlMY",
-            authDomain: "rotulos-9e0cb.firebaseapp.com",
-            projectId: "rotulos-9e0cb",
-            storageBucket: "rotulos-9e0cb.firebasestorage.app",
-            messagingSenderId: "607613417398",
-            appId: "1:607613417398:web:f7ef415f033ba67fd93317",
-            measurementId: "G-KWWHDJCLQZ"
+            apiKey: "AIzaSyCKk1Rsl8bjXTy47dCHjVEp0VVCcCdKhgI",
+            authDomain: "rotulosbrasil-3185e.firebaseapp.com",
+            projectId: "rotulosbrasil-3185e",
+            storageBucket: "rotulosbrasil-3185e.firebasestorage.app",
+            messagingSenderId: "655058223266",
+            appId: "1:655058223266:web:5cbd2a54fc8a30af5cd7fb",
+            measurementId: "G-JCF05DLXM5"
         };
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        // --- NOVO: Inicializando o Storage ---
         const storage = getStorage(app);
 
         const WORKER_URL = "https://rotulos.lucasmaia2709.workers.dev";
@@ -655,6 +663,13 @@
                 switchView('home');
                 generateWineQuote();
             } else {
+                // --- FIX: Cancelar o ouvinte do catálogo ao sair ---
+                // Isto previne o erro "Missing permissions" ao fazer logout
+                if (catalogUnsubscribe) {
+                    catalogUnsubscribe();
+                    catalogUnsubscribe = null;
+                }
+
                 switchView('auth');
                 ui.auth.loginEmail.value = "";
                 ui.auth.loginPass.value = "";
@@ -796,39 +811,39 @@
 
                 if (currentUser) {
                     try {
-                        const thumb = await compressImage(base64Image); // Isso retorna a string base64 "data:image/..."
+                        const thumb = await compressImage(base64Image); 
                         
-                        // --- NOVO: Lógica de Upload para o Storage (Atualizado para Email/Nome) ---
                         const filename = Date.now() + '.jpg';
                         
-                        // Ajuste solicitado: Users/ Email / Nome do vinho / Imagem
-                        // Sanitização básica para evitar erros no caminho (remove barras e caracteres estranhos)
+                        // Caminho atualizado para usar Email (se disponível)
                         const userFolder = currentUser.email || currentUser.uid; 
                         const wineFolder = (data.nome || 'SemNome').replace(/[\/\\#\?]/g, "_"); 
 
-                        // Cria referência: Users/email/nome_vinho/timestamp.jpg
                         const storagePath = `Users/${userFolder}/${wineFolder}/${filename}`;
                         const storageRef = ref(storage, storagePath);
                         
-                        // Faz o upload da string base64
                         await uploadString(storageRef, thumb, 'data_url');
-                        
-                        // Obtém o link público para download
                         const downloadURL = await getDownloadURL(storageRef);
 
-                        // Salva no Firestore
                         const winesRef = collection(db, 'users', currentUser.uid, 'wines');
                         await addDoc(winesRef, { 
                             ...data, 
                             timestamp: serverTimestamp(), 
-                            imageThumb: downloadURL, // Salva o Link
-                            storagePath: storageRef.fullPath // Salva o caminho para poder deletar depois
+                            imageThumb: downloadURL, 
+                            storagePath: storageRef.fullPath 
                         });
                         
                         ui.scan.successMsg.classList.remove('hidden');
                     } catch (fsError) {
                         console.error("Erro Firestore/Storage:", fsError);
-                        ui.scan.errorMsg.classList.remove('hidden');
+                        // Fallback silencioso (salva sem storage se der erro)
+                        try {
+                             const winesRef = collection(db, 'users', currentUser.uid, 'wines');
+                             await addDoc(winesRef, { ...data, timestamp: serverTimestamp() });
+                             ui.scan.successMsg.classList.remove('hidden');
+                        } catch(e) {
+                             ui.scan.errorMsg.classList.remove('hidden');
+                        }
                     }
                 }
             }
@@ -894,6 +909,8 @@
                 console.error("Erro Snapshot:", error);
                 ui.catalog.loader.classList.add('hidden');
                 if (error.code === 'permission-denied' || error.message.includes('permission')) {
+                    const errText = document.getElementById('catalog-error-text');
+                    if (errText) errText.textContent = "Permissão negada. Verifique as Regras de Segurança no Firebase Console.";
                     ui.catalog.permError.classList.remove('hidden');
                 }
             });
@@ -920,8 +937,13 @@
             const div = document.createElement('div');
             // Cartão do catálogo em modo escuro
             div.className = "relative w-full pb-[130%] rounded-2xl overflow-hidden shadow-md bg-[#1e1e1e] cursor-pointer active:scale-95 transition-transform border border-white/5";
+            
+            // Tratamento para imagem antiga (base64 puro) vs nova (URL do storage)
+            // Se não tiver imagem, usa placeholder
+            const imgSrc = item.imageThumb || item.imagem || 'https://via.placeholder.com/300x400?text=Sem+Imagem';
+            
             div.innerHTML = `
-                <img src="${item.imageThumb}" class="absolute inset-0 w-full h-full object-cover">
+                <img src="${imgSrc}" class="absolute inset-0 w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#000] via-transparent to-transparent opacity-90"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-3">
                     <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-sm uppercase tracking-wider mb-1 inline-block backdrop-blur-sm">${item.tipo || 'Vinho'}</span>
@@ -934,7 +956,10 @@
 
         function openDetail(item) {
             currentDetailId = item.id;
-            ui.detail.img.src = item.imageThumb;
+            // Tratamento de imagem para detalhe
+            const imgSrc = item.imageThumb || item.imagem || '';
+            ui.detail.img.src = imgSrc;
+            
             ui.detail.title.textContent = item.nome;
             ui.detail.type.textContent = item.tipo;
             ui.detail.region.textContent = item.regiao;
@@ -947,19 +972,24 @@
                 ui.detail.date.textContent = "Degustado em " + date.toLocaleDateString('pt-BR');
             }
 
-            const term = encodeURIComponent(item.nome + " vinho");
+            const term = encodeURIComponent(item.nome);
+            // Para o Mambo, o termo no caminho da URL geralmente funciona melhor sem 'vinho' extra se for muito específico, 
+            // mas vamos manter o padrão codificado. O ideal para o Mambo é o termo exato.
+            const mamboTerm = encodeURIComponent(item.nome);
+            
+            // LINKS DE MERCADO BRASILEIROS ATUALIZADOS
             ui.detail.markets.innerHTML = `
-                <a href="https://www.lidl.pt/q/search?q=${term}" target="_blank" class="market-btn market-lidl">
-                    Lidl
+                <a href="https://www.paodeacucar.com/busca?terms=${term}" target="_blank" class="market-btn market-pa">
+                    Pão de Açúcar
                 </a>
-                <a href="https://www.continente.pt/pesquisa/?q=${term}" target="_blank" class="market-btn market-cont">
-                    Continente
+                <a href="https://www.marche.com.br/collections/all?q=${term}" target="_blank" class="market-btn market-stmarche">
+                    St. Marche
                 </a>
-                <a href="https://www.auchan.pt/pt/pesquisa?q=${term}" target="_blank" class="market-btn market-auchan">
-                    Auchan
+                <a href="https://www.mambo.com.br/${mamboTerm}?_q=${mamboTerm}&map=ft" target="_blank" class="market-btn market-mambo">
+                    Mambo
                 </a>
-                <a href="https://www.garrafeiranacional.com/catalogsearch/result/?q=${term}" target="_blank" class="market-btn market-gn">
-                    Garrafeira Nacional
+                <a href="https://www.wine.com.br/search.php?q=${term}#&search-term=${term}" target="_blank" class="market-btn market-wine">
+                    Wine.com.br
                 </a>
             `;
 
@@ -971,24 +1001,21 @@
         ui.detail.btnDelete.onclick = async () => {
             if (!confirm("Remover?")) return;
             try {
-                // --- NOVO: Deletar Imagem do Storage ---
                 const item = allWinesData.find(i => i.id === currentDetailId);
                 
-                // Tenta deletar se tiver o caminho salvo
+                // Tenta deletar a imagem do Storage se existir caminho
                 if (item && item.storagePath) {
                     try {
                         const imgRef = ref(storage, item.storagePath);
                         await deleteObject(imgRef);
                     } catch (storageErr) {
-                        console.error("Aviso: Imagem não encontrada ou erro ao deletar do Storage", storageErr);
+                        console.error("Aviso ao deletar imagem:", storageErr);
                     }
                 }
 
-                // Deleta o documento do Firestore
                 await deleteDoc(doc(db, 'users', currentUser.uid, 'wines', currentDetailId));
                 ui.detail.btnClose.click();
             } catch(e) {
-                console.error(e);
                 alert("Erro ao remover: Verifique suas permissões.");
             }
         };
